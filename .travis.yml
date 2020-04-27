@@ -4,11 +4,24 @@ services:
     - docker
     
 before_install:
-    - docker build -t mail2pps/docker-react -f Dockerfile.dev .
-
-script:
-    - docker run -e CI=true mail2pps/docker-react npm run test -- --coverage
+    - docker build -t mail2pps/react-test -f ./client/Dockerfile.dev ./client
     
+script:
+    - docker run -e CI=true mail2pps/react-test npm run test -- --coverage
+
+after_success:
+    - docker build -t mail2pps/multi-client ./client
+    - docker build -t mail2pps/multi-nginx ./nginx
+    - docker build -t mail2pps/multi-server ./server
+    - docker build -t mail2pps/multi-worker ./worker
+    
+#login to docker cli Push above image to docker hub    
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+    - docker push mail2pps/multi-client
+    - docker push mail2pps/multi-nginx
+    - docker push mail2pps/multi-server
+    - docker push mail2pps/multi-worker
+
 deploy:
    provider: elasticbeanstalk
    region: "us-east-2"
