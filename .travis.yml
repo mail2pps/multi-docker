@@ -23,12 +23,13 @@ after_success:
     - docker push mail2pps/multi-worker
 
 deploy:
+   edge: true
    provider: elasticbeanstalk
    region: "us-east-2"
-   app: "docker-react"
-   env: "DockerReact-env-1"
+   app: "multi-docker"
+   env: "MultiDocker-env"
    bucket_name: "elasticbeanstalk-us-east-2-524414862098"
-   bucket_path: "docker-react"
+   bucket_path: "multi-docker"
    on:
         branch: master
    access_key_id: $AWS_ACCESS_KEY
